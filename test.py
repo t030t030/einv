@@ -1,20 +1,24 @@
 import requests
 
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
+# 書類管理番号
+docid = "S100H7TT"
 
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+# 書類取得APIのエンドポイント
+url = "https://disclosure.edinet-fsa.go.jp/api/v1/documents/" + docid
 
-# 書類一覧APIのエンドポイント
-url = "https://disclosure.edinet-fsa.go.jp/api/v1/documents.json"
-
-# 書類一覧APIのリクエストパラメータ
+# 書類取得APIのリクエストパラメータ
 params = {
-  "date" : "2019-04-25",
   "type" : 2
 }
 
-# 書類一覧APIの呼び出し
+# 出力ファイル名
+filename = docid + ".zip"
+
+# 書類取得APIの呼び出し
 res = requests.get(url, params=params, verify=False)
 
-# レスポンス（JSON）の表示
-print(res.text)
+# ファイルへ出力
+if res.status_code == 200:
+  with open(filename, 'wb') as f:
+    for chunk in res.iter_content(chunk_size=1024):
+      f.write(chunk)
